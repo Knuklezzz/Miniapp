@@ -1,0 +1,188 @@
+/*@import "tailwindcss";*/
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+}
+
+html, body {
+    font-family: "Rubik", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-color: #232323;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 17px;
+    gap: var(--gap-size);
+    padding: calc(var(--gap-size)*3);
+    transition: transform 0.3s ease;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    /*margin: 20% 0;*/
+}
+
+.columnLeft, .columnRight {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-size);
+}
+
+.left-flex-item-0,
+.left-flex-item-1,
+.left-flex-item-2 {
+    background-color: #323232;
+    color: white;
+    text-align: center;
+    border-radius: calc(var(--tile-size) * 0.05);
+    width: var(--tile-size);
+    height: var(--height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--padding);
+}
+
+.right-flex-item-0,
+.right-flex-item-1 {
+    background-color: #323232;
+    color: white;
+    text-align: center;
+    border-radius: calc(var(--tile-size) * 0.05);
+    width: var(--tile-size);
+    height: var(--height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--padding);
+}
+
+.right-flex-item-2,
+.right-flex-item-3 {
+    background-color: #323232;
+    color: white;
+    text-align: center;
+    border-radius: calc(var(--tile-size) * 0.05);
+    width: var(--tile-size);
+    height: calc((var(--height) - var(--padding) * 2 - var(--gap-size))* 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--padding);
+}
+
+.textarea {
+    font-family: "Rubik", sans-serif;
+    width: 100%;
+    height: calc(100% - var(--padding) * 2);
+    font-size: 16px;
+    line-height: 20px;
+    border: none;
+    outline: none;
+    margin: 0;
+    background: repeating-linear-gradient(
+            transparent 0px,
+            transparent 19px,
+            #1e1e1e 19px,
+            #1e1e1e 20px
+    );
+    background-attachment: local;
+    resize: none;
+    overflow-y: auto;
+    padding: 1px;
+    color: #787878;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/*.days {
+    margin: 0px;
+}*/
+
+.days {
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.date-display {
+    font-size: 0.8em;
+    color: #787878;
+}
+
+/*.keyboard-active {
+    transform: translateY(-50%);
+}*/
+
+.navigation-container {
+    /*position: fixed;
+    top: 50%;
+    left: 0;
+    right: 0;*/
+    display: flex;
+    justify-content: space-between;
+/*    padding: 0 1rem;
+    transform: translateY(-50%);
+    z-index: 10;
+    pointer-events: none;*/
+}
+
+.nav-button {
+    background-color: #323232;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background-color 0.2s;
+}
+
+.nav-button:hover {
+    background-color: #404040;
+}
