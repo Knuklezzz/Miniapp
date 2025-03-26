@@ -49,7 +49,7 @@ html, body {
 .flex-container {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     font-size: 17px;
     gap: var(--gap-size);
     padding: calc(var(--gap-size)*3);
@@ -200,4 +200,127 @@ html, body {
 }
 .editor-container {
     position: relative;
+}
+
+.Editor {
+    width: 100%;
+    padding: 5px;
+    height: calc(100% - var(--padding) * 2);
+}
+
+.tiptap {
+    max-height: inherit;
+    overflow-y: auto; /* Добавляем скролл */
+    font-size: 16px;
+    line-height: 10px;
+}
+
+.tiptap.ProseMirror {
+    /*max-height: 150px;*/
+    overflow-y: auto;  /* Прокрутка при превышении */
+    box-sizing: border-box; /* Корректный учет отступов */
+    padding: 5px; /* Немного отступа внутри */
+     /* Контролируем рост вниз */
+}
+
+/* Basic editor styles */
+.tiptap:first-child {
+    margin-top: 0;
+    display: block; /* Убедитесь, что контейнер не имеет display: flex или text-align: center */
+    text-align: left;
+    height: calc(100% - var(--padding) * 2);
+    overflow-y: auto;
+}
+
+/* List styles */
+.tiptap ul,
+.tiptap ol {
+    padding: 0 1rem;
+    margin: 1.25rem 1rem 1.25rem 0.4rem;
+}
+
+.tiptap ul li p,
+.tiptap ol li p {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+/* Heading styles */
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+    line-height: 1.1;
+    margin-top: 2.5rem;
+    text-wrap: pretty;
+}
+
+.tiptap h1,
+.tiptap h2 {
+    margin-top: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.tiptap h1 {
+    font-size: 1.4rem;
+}
+
+.tiptap h2 {
+    font-size: 1.2rem;
+}
+
+.tiptap h3 {
+    font-size: 1.1rem;
+}
+
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+    font-size: 1rem;
+}
+
+/* Code and preformatted text styles */
+.tiptap code {
+    background-color: var(--purple-light);
+    border-radius: 0.4rem;
+    color: var(--black);
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+}
+
+.tiptap pre {
+    background: var(--black);
+    border-radius: 0.5rem;
+    color: var(--white);
+    font-family: 'JetBrainsMono', monospace;
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
+}
+
+.tiptap pre code {
+    background: none;
+    color: inherit;
+    font-size: 0.8rem;
+    padding: 0;
+}
+
+.tiptap blockquote {
+    border-left: 3px solid var(--gray-3);
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+}
+
+.tiptap hr {
+    border: none;
+    border-top: 1px solid var(--gray-2);
+    margin: 2rem 0;
+}
+.tiptap p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
 }
