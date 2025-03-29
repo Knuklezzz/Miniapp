@@ -1223,22 +1223,27 @@ export default App;
 
 import React, { useState, useEffect, useRef, useMemo, useLayoutEffect, useCallback } from "react";
 import WebApp from "@twa-dev/sdk";
+import '@/index.css';
 import { supabase } from "./supabaseClient.js";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {Bold, ChevronLeft, ChevronRight, Italic, Underline} from 'lucide-react';
 import MyAnimation from "@/Loader.jsx";
 import DatePicker from "@/DatePicker.jsx";
 import { BottomBar, MainButton, SecondaryButton } from '@twa-dev/sdk/react';
-import { Button } from "@/components/ui/button";
+
+// { Button } from "@/components/ui/button.jsx";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Color } from '@tiptap/extension-color'
-import ListItem from '@tiptap/extension-list-item'
-import TextStyle from '@tiptap/extension-text-style'
-import { EditorProvider, useCurrentEditor } from '@tiptap/react'
+//import { Color } from '@tiptap/extension-color'
+//import ListItem from '@tiptap/extension-list-item'
+//import TextStyle from '@tiptap/extension-text-style'
+//import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 //import TiptapEditor from "@/TiptapEditor.jsx";
 //import MenuBar from "./MenuBar";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from '@tiptap/extension-placeholder';
+import {ToggleGroupDemo} from "@/ToggleGroupDemo.jsx";
+//import BottomBar from "@/BottomBar.jsx";
+import StickyBottomBar from "@/StickyBottomBar.jsx";
 
 const days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 
@@ -1256,9 +1261,7 @@ function getWeekDates(date) {
         const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // месяцы с 0, поэтому +1
         const dayy = String(currentDate.getDate()).padStart(2, '0');
         weekDates[day] = `${year}-${month}-${dayy}`;
-        //weekDates[day] = currentDate.toISOString().split('T'); //каждому дню недели нашли его дату
-        //weekDates[day] = currentDate.toLocaleDateString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit' })
-        //console.log(`дни неедели ${weekDates[day]}`);
+
     });
 
     return weekDates;
@@ -1269,7 +1272,6 @@ function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
 }
-
 
 const MenuBar = ({ editor }) => {
     if (!editor) return null;
@@ -1310,9 +1312,9 @@ const TiptapEditor = ({ content, onFocus, onUpdate, setActiveEditor }) => {
     if (!editor) return null;
 
     return (
-        <div onFocus={onFocus}>
-            <EditorContent editor={editor} />
-        </div>
+
+            <EditorContent className="EDD" editor={editor} />
+
     );
 };
 
@@ -1328,8 +1330,8 @@ function App() {
     const [notes, setNotes] = useState({});
     const containerRef = useRef(null);
     const [loading, setLoading] = useState(true);
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [activeTextarea, setActiveTextarea] = useState(null);
+    const tiptapEditorRef = useRef(null);
+    const [bottomPosition, setBottomPosition] = useState(0);
 
     //вычисляю 5 недель для первого фетча
     const [weekDates, setWeekDates] = useState(getWeekDates(new Date (currDate)));
@@ -1338,18 +1340,11 @@ function App() {
     const [nextWeekDate, setNextWeekDate] = useState(getWeekDates(new Date(currDate.getTime() + 7 * 24 * 60 * 60 * 1000)));
     const [next2WeekDate, setNext2WeekDate] = useState(getWeekDates(new Date(currDate.getTime() + 14 * 24 * 60 * 60 * 1000)));
 
-/*    const [weekDates, setWeekDates] = useState(() => getWeekDatesMemoized(new Date()));
-    const [prevWeekDate, setPrevWeekDate] = useState(() => getWeekDatesMemoized(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)));
-    const [prev2WeekDate, setPrev2WeekDate] = useState(() => getWeekDatesMemoized(new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)));
-    const [nextWeekDate, setNextWeekDate] = useState(() => getWeekDatesMemoized(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)));
-    const [next2WeekDate, setNext2WeekDate] = useState(() => getWeekDatesMemoized(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)));*/
-
     const [activeEditor, setActiveEditor] = useState(null);
 
     useEffect(() => {
 
         //if (!userId) return;
-        //console.log(currDate);
 
         const fetchNotes = async () => {
             setLoading(true);
@@ -1384,7 +1379,6 @@ function App() {
             setLoading(false);
         };
         fetchNotes();
-        //setLoading(false);
 
     }, [userId, currDate]);
 
@@ -1452,8 +1446,7 @@ function App() {
         const newCurrentWeek = new Date(Object.values(weekDates)[0]);
 
         if (direction === "next") {
-/*            const newNext2WeekDate = getWeekDates(new Date(next2WeekDate[days[0]]));
-            newNext2WeekDate[days[0]] = new Date(newNext2WeekDate[days[0]]).getTime() + 7 * 24 * 60 * 60 * 1000;*/
+
             const newNext2WeekDate = getWeekDates(new Date(newCurrentWeek.getTime() + 21 * 24 * 60 * 60 * 1000));
             console.log(newNext2WeekDate);
             setPrevWeekDate(weekDates);
@@ -1471,11 +1464,10 @@ function App() {
                 return updatedNotes;
             });
 
-            setPrev2WeekDate(getWeekDates(new Date(newCurrentWeek.getTime() - 14 * 24 * 60 * 60 * 1000)));//поменял 14 на 7 тк думаю так правильно
+            setPrev2WeekDate(getWeekDates(new Date(newCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000)));//поменял 7 на 14 тк думаю так правильно спойлер было неправильно
         } else {
-            /*const newPrev2WeekDate = getWeekDates(new Date(prev2WeekDate[days[0]]));
-            newPrev2WeekDate[days[0]] = new Date(newPrev2WeekDate[days[0]]).getTime() - 7 * 24 * 60 * 60 * 1000;*/
-            const newPrev2WeekDate = getWeekDates(new Date(newCurrentWeek.getTime() + 21 * 24 * 60 * 60 * 1000));
+
+            const newPrev2WeekDate = getWeekDates(new Date(newCurrentWeek.getTime() - 21 * 24 * 60 * 60 * 1000));
             setNextWeekDate(weekDates);
             setWeekDates(prevWeekDate);
             setPrevWeekDate(prev2WeekDate);
@@ -1491,9 +1483,10 @@ function App() {
                 return updatedNotes;
             });
 
-            setNext2WeekDate(getWeekDates(new Date(newCurrentWeek.getTime() + 14 * 24 * 60 * 60 * 1000))); //поменял 14 на 7 тк думаю так правильно
+            setNext2WeekDate(getWeekDates(new Date(newCurrentWeek.getTime() + 7 * 24 * 60 * 60 * 1000))); //поменял 7 на 14 тк думаю так правильно спойлер было неправильно
         }
     };
+
 
 // Функция загрузки заметок для недели
     const fetchNotesForWeek = async (weekDates) => {
@@ -1520,38 +1513,51 @@ function App() {
         }
     };
 
-/*    useEffect(() => {
 
-        const newCurrentWeek = new Date(Object.values(weekDates)[0]); // Берем дату понедельника новой недели
-        setPrevWeekDate(getWeekDates(new Date(newCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000)));
-        setNextWeekDate(getWeekDates(new Date(newCurrentWeek.getTime() + 7 * 24 * 60 * 60 * 1000)));
-
-    }, [weekDates]);*/
-
-    useEffect(() => {
+ /*   useEffect(() => {
         const handleFocus = (event) => {
             const target = event.target;
-            if (target.tagName === 'TEXTAREA') {
-                const rect = target.getBoundingClientRect();
+            const editorContainer = target.closest('.editor-container');
+
+            if (editorContainer) {
+                const rect = editorContainer.getBoundingClientRect();
                 const viewportHeight = window.innerHeight;
-                const keyboardHeight = viewportHeight * 0.45;
+                const keyboardHeight = viewportHeight * 0.52; // 45% от экрана — примерная высота клавиатуры
                 const bottomPosition = rect.bottom;
+                console.log(rect.bottom);
                 const visibleHeight = viewportHeight - keyboardHeight;
+                //setBottomPosition(keyboardHeight);
                 setIsKeyboardOpen(true);
+
                 if (bottomPosition > visibleHeight) {
                     const scrollAmount = bottomPosition - visibleHeight;
                     if (containerRef.current) {
-                        containerRef.current.style.transform = `translateY(-${scrollAmount}px)`;
-
-
+                        //containerRef.current.style.transform = `translateY(-${scrollAmount}px)`;
+                        //const bottombarPos = WebApp.viewportHeight;
+                        setBottomPosition(scrollAmount);
                     }
+                } else {
+                    setBottomPosition(0);
                 }
             }
         };
 
-        const handleBlur = () => {
+        /!*const handleBlur = () => {
             if (containerRef.current) {
                 containerRef.current.style.transform = 'translateY(0)';
+                setIsKeyboardOpen(false);
+            }
+        };*!/
+
+        const handleBlur = (event) => {
+            if (
+                containerRef.current &&
+                containerRef.current.contains(event.relatedTarget)
+            ) {
+                return; // НЕ убираем `StickyBottomBar`, если кликнули на него
+            }
+            if (containerRef.current) {
+                containerRef.current.style.transform = "translateY(0)";
                 setIsKeyboardOpen(false);
             }
         };
@@ -1564,7 +1570,7 @@ function App() {
             document.removeEventListener('focusout', handleBlur);
         };
     }, []);
-
+*/
     useEffect(() => {
         const root = document.documentElement;
 
@@ -1579,15 +1585,14 @@ function App() {
     const columnLeft = days.slice(0, 3);
     const columnRight = days.slice(3);
 
-
     return loading ? <MyAnimation/> : (
-        <div className="min-h-screen bg-gray-900 text-white" ref={containerRef}>
+        <div  ref={containerRef}>
 
             <DatePicker selectedDate={currDate} setSelectedDate={(date) => {
-                console.log("Выбранная дата:", date); // Смотрим, что приходит из календаря
+                //console.log("Выбранная дата:", date); // Смотрим, что приходит из календаря
                 if (date) {
                     const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                    console.log("Дата после обработки:", localDate); // Проверяем, нет ли сдвига
+                    //console.log("Дата после обработки:", localDate); // Проверяем, нет ли сдвига
                     setCurrDate(new Date(localDate));
                     setWeekDates(getWeekDates(localDate));
                     setPrevWeekDate(getWeekDates(new Date(localDate.getTime() - 7 * 24 * 60 * 60 * 1000)));
@@ -1614,18 +1619,13 @@ function App() {
                 <div className="columnLeft">
                     {columnLeft.map((day, index) => (
                         <div key={index} className={`left-flex-item-${index}`}>
+                            <div className="editor-container">
                             <h4 className="days">
                                 {day}
                                 <span className="date-display">
                                     {weekDates[day] && formatDate(weekDates[day])}
                                 </span>
                             </h4>
-{/*                        <textarea
-                                className="textarea"
-                                value={notes[weekDates[day]] || ''}
-                                onChange={(e) => handleNoteChange(weekDates[day], e.target.value)}
-                            />*/}
-
                             <div className="Editor">
                                 <TiptapEditor
 
@@ -1636,47 +1636,65 @@ function App() {
                                     setActiveEditor={setActiveEditor}
                                 />
                             </div>
+                            </div>
                         </div>
                     ))}
                 </div>
                 <div className="columnRight">
                     {columnRight.map((day, index) => (
                         <div key={index} className={`right-flex-item-${index}`}>
+                            <div className="editor-container">
                             <h4 className="days">
                                 {day}
                                 <span className="date-display">
                                     {weekDates[day] && formatDate(weekDates[day])}
                                 </span>
                             </h4>
-{/*                           <textarea
-                                className="textarea"
-                                value={notes[weekDates[day]] || ''}
-                                onChange={(e) => handleNoteChange(weekDates[day], e.target.value)}
-                            />*/}
                             <div className="Editor">
-                            <TiptapEditor
+                                <TiptapEditor
 
                                 key={weekDates[day]}  // Перерисовываем при смене недели
                                 content={notes[weekDates[day]] || ''}
                                 //onFocus={() => setActiveEditor(day)}
                                 onUpdate={(newContent) => handleNoteChange(weekDates[day], newContent)}
                                 setActiveEditor={setActiveEditor}
-                            />
+                                />
                             </div>
-
+                        </div>
                         </div>
                     ))}
                 </div>
             </div>
             {activeEditor &&
-                <BottomBar bgColor="#ff0000">
+                <BottomBar bgColor="#ff0000" >
                     <MainButton text="Bold" onClick={() => activeEditor.chain().focus().toggleBold().run()}
                                 className={activeEditor.isActive('bold') ? 'is-active' : ''} />
                     <SecondaryButton text="Cancel" position="bottom" onClick={() => activeEditor.chain().focus().toggleItalic().run()}
                                      className={activeEditor.isActive('italic') ? 'is-active' : ''} />
                 </BottomBar>
 
+/*
+                <StickyBottomBar scrollAmount={bottomPosition} >
+                    <ToggleGroup variant="outline" type="multiple">
+                        <ToggleGroupItem value="bold" aria-label="Toggle bold">
+                            <Bold className="h-4 w-4" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="italic" aria-label="Toggle italic">
+                            <Italic className="h-4 w-4" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="underline" aria-label="Toggle underline">
+                            <Underline className="h-4 w-4" />
+                        </ToggleGroupItem>
+                    </ToggleGroup>
+
+
+
+                </StickyBottomBar>
+*/
+
             }
+
+
         </div>
     );
 }
