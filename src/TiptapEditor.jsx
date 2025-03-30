@@ -1,24 +1,31 @@
-/*
-import { useEditor } from "@tiptap/react";
-import {StarterKit} from "@tiptap/starter-kit";
-import { EditorContent } from "@tiptap/react";
+import {EditorContent, useEditor, useEditorState} from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import React from "react";
 
-const TiptapEditor = ({ id, content, onFocus, onUpdate }) => {
+const TiptapEditor = ({ content, onFocus, onUpdate, setActiveEditor }) => {
     const editor = useEditor({
-        extensions: [StarterKit],
+        extensions: [
+            StarterKit, // Используем StarterKit
+            Placeholder.configure({
+                placeholder: 'Запишите планы...', // Ваш текст, который будет отображаться, когда редактор пуст
+            }),
+        ],
         content,
         onUpdate: ({ editor }) => onUpdate(editor.getHTML()),
         onFocus: () => setActiveEditor(editor),
         onBlur: () => setActiveEditor(null),
+
+
     });
 
     if (!editor) return null;
 
     return (
-        <div onFocus={onFocus}>
-            <EditorContent editor={editor} className="TiptapEditor" />
-        </div>
+
+        <EditorContent className="EDD" editor={editor} />
+
     );
 };
 
-export default TiptapEditor;*/
+export default TiptapEditor

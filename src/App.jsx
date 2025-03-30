@@ -1220,6 +1220,455 @@ export default App;
 */
 
 
+/*
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import WebApp from "@twa-dev/sdk";
+import '@/index.css';
+import { supabase } from "./supabaseClient.js";
+import { Bold, ChevronLeft, ChevronRight, Italic, Underline } from 'lucide-react';
+import MyAnimation from "@/Loader.jsx";
+import DatePicker from "@/DatePicker.jsx";
+import { BottomBar, MainButton, SecondaryButton } from '@twa-dev/sdk/react';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import TiptapEditor from "@/TiptapEditor.jsx";
+import StickyBottomBar from "@/StickyBottomBar.jsx";
+
+const days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+
+const getWeekDates = (date) => {
+    const monday = new Date(date);
+    monday.setDate(date.getDate() - (date.getDay() || 7) + 1);
+    return days.reduce((acc, day, index) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + index);
+        acc[day] = d.toISOString().split('T')[0];
+        return acc;
+    }, {});
+};
+
+const formatDate = (dateString) => new Date(dateString).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => setDebouncedValue(value), delay);
+        return () => clearTimeout(handler);
+    }, [value, delay]);
+    return debouncedValue;
+};
+
+const App = () => {
+    const params = new URLSearchParams(WebApp.initData);
+    const user = JSON.parse(params.get("user") || "{}");
+    const userId = user?.id || null;
+    const [currDate, setCurrDate] = useState(new Date());
+    const [notes, setNotes] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [activeEditor, setActiveEditor] = useState(null);
+    const containerRef = useRef(null);
+
+    const [weekDates, setWeekDates] = useState(() => getWeekDates(currDate));
+
+    const fetchNotes = useCallback(async () => {
+        if (!userId) return;
+        setLoading(true);
+        const dateValues = Object.values(weekDates);
+        const { data, error } = await supabase.from("user_notes").select("date, note").eq("user_id", userId).in("date", dateValues);
+        if (!error) setNotes(data.reduce((acc, { date, note }) => ({ ...acc, [date]: note }), {}));
+        setLoading(false);
+    }, [userId, weekDates]);
+
+    useEffect(() => { fetchNotes(); }, [fetchNotes]);
+
+    const handleNoteChange = (date, newNote) => setNotes(prev => (prev[date] === newNote ? prev : { ...prev, [date]: newNote }));
+
+    const debouncedNotes = useDebounce(notes, 500);
+
+    useEffect(() => {
+        if (!userId) return;
+        Object.entries(debouncedNotes).forEach(async ([date, note]) => {
+            if (note.trim() === "") {
+                await supabase.from("user_notes").delete().eq("user_id", userId).eq("date", date);
+            } else {
+                const { data } = await supabase.from("user_notes").select("id").eq("user_id", userId).eq("date", date).single();
+                data ? await supabase.from("user_notes").update({ note }).eq("user_id", userId).eq("date", date) : await supabase.from("user_notes").insert([{ user_id: userId, date, note }]);
+            }
+        });
+    }, [debouncedNotes]);
+
+    const navigateWeek = useCallback((direction) => {
+        const newDate = new Date(Object.values(weekDates)[0]);
+        newDate.setDate(newDate.getDate() + (direction === "next" ? 7 : -7));
+        setWeekDates(getWeekDates(newDate));
+    }, [weekDates]);
+
+    if (loading) return <MyAnimation />;
+
+    return (
+        <div ref={containerRef}>
+            <DatePicker selectedDate={currDate} setSelectedDate={(date) => {
+                if (date) {
+                    const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                    setCurrDate(newDate);
+                    setWeekDates(getWeekDates(newDate));
+                }
+            }} />
+            <div className="navigation-container">
+                <button className="nav-button" onClick={() => navigateWeek('prev')}><ChevronLeft size={24} /></button>
+                <button className="nav-button" onClick={() => navigateWeek('next')}><ChevronRight size={24} /></button>
+            </div>
+            <div className="flex-container">
+                {[days.slice(0, 3), days.slice(3)].map((column, i) => (
+                    <div key={i} className={i === 0 ? "columnLeft" : "columnRight"}>
+                        {column.map((day) => (
+                            <div key={day} className="editor-container">
+                                <h4 className="days">{day}<span className="date-display">{formatDate(weekDates[day])}</span></h4>
+                                <TiptapEditor
+                                    key={weekDates[day]}
+                                    content={notes[weekDates[day]] ?? ''}
+                                    onFocus={() => setActiveEditor(day)}
+                                    onUpdate={(newContent) => handleNoteChange(weekDates[day], newContent)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                ))}
+            </div>
+            {activeEditor && <BottomBar bgColor="#ff0000">
+                <MainButton text="Bold" onClick={() => activeEditor.chain().focus().toggleBold().run()} />
+                <SecondaryButton text="Cancel" onClick={() => activeEditor.chain().focus().toggleItalic().run()} />
+            </BottomBar>}
+        </div>
+    );
+};
+
+export default App; //оптимизированная версия chatgpt, стили пропали но вроде стало шустрее
+*/
+
+
+
+/*
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import WebApp from "@twa-dev/sdk";
+import '@/index.css';
+import { supabase } from "./supabaseClient.js";
+import { Bold, ChevronLeft, ChevronRight, Italic, Underline } from 'lucide-react';
+import MyAnimation from "@/Loader.jsx";
+import DatePicker from "@/DatePicker.jsx";
+import { BottomBar, MainButton, SecondaryButton } from '@twa-dev/sdk/react';
+import TiptapEditor from "@/TiptapEditor.jsx";
+
+const days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+
+function App() {
+    // Parse user data once
+    const params = useMemo(() => new URLSearchParams(WebApp.initData), []);
+    const user = useMemo(() => JSON.parse(params.get("user") || "{}"), [params]);
+    const userId = useMemo(() => user?.id || null, [user]);
+
+    const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+    const [currDate, setCurrDate] = useState(new Date());
+    const [notes, setNotes] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [bottomPosition, setBottomPosition] = useState(0);
+    const [activeEditor, setActiveEditor] = useState(null);
+
+    // Memoize refs
+    const containerRef = useRef(null);
+    const tiptapEditorRef = useRef(null);
+
+    // Memoize utility functions
+    const getWeekDates = useCallback((date) => {
+        const monday = new Date(date);
+        monday.setDate(date.getDate() - (date.getDay() || 7) + 1);
+        const weekDates = {};
+        days.forEach((day, index) => {
+            const currentDate = new Date(monday);
+            currentDate.setDate(monday.getDate() + index);
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const dayy = String(currentDate.getDate()).padStart(2, '0');
+            weekDates[day] = `${year}-${month}-${dayy}`;
+        });
+        return weekDates;
+    }, []);
+
+    const formatDate = useCallback((dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+    }, []);
+
+    // Memoize date calculations
+    const weekDates = useMemo(() => getWeekDates(currDate), [currDate, getWeekDates]);
+    const prevWeekDate = useMemo(() => getWeekDates(new Date(currDate.getTime() - 7 * 24 * 60 * 60 * 1000)), [currDate, getWeekDates]);
+    const prev2WeekDate = useMemo(() => getWeekDates(new Date(currDate.getTime() - 14 * 24 * 60 * 60 * 1000)), [currDate, getWeekDates]);
+    const nextWeekDate = useMemo(() => getWeekDates(new Date(currDate.getTime() + 7 * 24 * 60 * 60 * 1000)), [currDate, getWeekDates]);
+    const next2WeekDate = useMemo(() => getWeekDates(new Date(currDate.getTime() + 14 * 24 * 60 * 60 * 1000)), [currDate, getWeekDates]);
+
+    // Memoize column splits
+    const columnLeft = useMemo(() => days.slice(0, 3), []);
+    const columnRight = useMemo(() => days.slice(3), []);
+
+    const fetchNotesForWeek = useCallback(async (weekDates) => {
+        if (!userId) return;
+
+        const dateValues = Object.values(weekDates);
+        const { data, error } = await supabase
+            .from("user_notes")
+            .select("date, note")
+            .eq("user_id", userId)
+            .in("date", dateValues);
+
+        if (error) {
+            console.error("Ошибка загрузки данных:", error);
+        } else {
+            setNotes(prevNotes => {
+                const updatedNotes = { ...prevNotes };
+                data.forEach(({ date, note }) => {
+                    updatedNotes[date] = note;
+                });
+                return updatedNotes;
+            });
+        }
+    }, [userId]);
+
+    const handleNoteChange = useCallback((date, newNote) => {
+        setNotes(prevNotes => {
+            if (prevNotes[date] === newNote) return prevNotes;
+            return { ...prevNotes, [date]: newNote };
+        });
+    }, []);
+
+    const navigateWeek = useCallback(async (direction) => {
+        const newCurrentWeek = new Date(Object.values(weekDates)[0]);
+
+        if (direction === "next") {
+            const newNext2WeekDate = getWeekDates(new Date(newCurrentWeek.getTime() + 21 * 24 * 60 * 60 * 1000));
+            setCurrDate(new Date(newCurrentWeek.getTime() + 7 * 24 * 60 * 60 * 1000));
+            await fetchNotesForWeek(newNext2WeekDate);
+        } else {
+            const newPrev2WeekDate = getWeekDates(new Date(newCurrentWeek.getTime() - 21 * 24 * 60 * 60 * 1000));
+            setCurrDate(new Date(newCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000));
+            await fetchNotesForWeek(newPrev2WeekDate);
+        }
+    }, [weekDates, fetchNotesForWeek, getWeekDates]);
+
+    const handleDatePickerChange = useCallback((date) => {
+        if (date) {
+            const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            setCurrDate(new Date(localDate));
+        }
+    }, []);
+
+    // Initial data fetch
+    useEffect(() => {
+        const fetchInitialNotes = async () => {
+            setLoading(true);
+            const dateValues = [
+                ...Object.values(prev2WeekDate),
+                ...Object.values(prevWeekDate),
+                ...Object.values(weekDates),
+                ...Object.values(nextWeekDate),
+                ...Object.values(next2WeekDate)
+            ];
+
+            const { data, error } = await supabase
+                .from("user_notes")
+                .select("date, note")
+                .eq("user_id", userId)
+                .in("date", dateValues);
+
+            if (error) {
+                console.error("Ошибка загрузки данных:", error);
+            } else {
+                const fetchedNotes = {};
+                data.forEach(({ date, note }) => {
+                    fetchedNotes[date] = note;
+                });
+                setNotes(fetchedNotes);
+            }
+            setLoading(false);
+        };
+
+        fetchInitialNotes();
+    }, [userId, currDate, prev2WeekDate, prevWeekDate, weekDates, nextWeekDate, next2WeekDate]);
+
+    function smoothTranslateY(element, targetY, duration = 300) {
+        if (!element) return;
+
+        const startY = element.__currentY || 0; // Кешируем текущую позицию
+        const startTime = performance.now();
+
+        element.style.willChange = 'transform'; // Подсказка браузеру
+
+        function animate(time) {
+            const elapsed = time - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeOutCubic(progress);
+            const newY = startY + (targetY - startY) * easedProgress;
+
+            element.style.transform = `translate3d(0, ${newY}px, 0)`;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                element.style.willChange = ''; // Сбрасываем после завершения
+            }
+
+            element.__currentY = newY; // Обновляем кеш
+        }
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    // Handle keyboard events
+    useEffect(() => {
+        const handleFocus = (event) => {
+            const target = event.target;
+            const editorContainer = target.closest('.editor-container');
+
+            if (editorContainer) {
+                const rect = editorContainer.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const keyboardHeight = viewportHeight * 0.52;
+                const bottomPosition = rect.bottom;
+                const visibleHeight = viewportHeight - keyboardHeight;
+
+                if (bottomPosition > visibleHeight) {
+                    const scrollAmount = bottomPosition - visibleHeight;
+                    if (containerRef.current) {
+                        smoothTranslateY(containerRef.current, -scrollAmount);
+                    }
+                } else {
+                    setBottomPosition(0);
+                }
+            }
+        };
+
+        const handleBlur = (event) => {
+            if (containerRef.current && containerRef.current.contains(event.relatedTarget)) {
+                return;
+            }
+            if (containerRef.current) {
+                smoothTranslateY(containerRef.current, 0);
+                setIsKeyboardOpen(false);
+            }
+        };
+
+        document.addEventListener('focusin', handleFocus);
+        document.addEventListener('focusout', handleBlur);
+
+        return () => {
+            document.removeEventListener('focusin', handleFocus);
+            document.removeEventListener('focusout', handleBlur);
+        };
+    }, []);
+
+    // Set CSS variables
+    useEffect(() => {
+        const root = document.documentElement;
+        if (!root.style.getPropertyValue("--tile-size")) {
+            root.style.setProperty("--tile-size", `${33 * (window.innerWidth / 100)}px`);
+            root.style.setProperty("--height", `${30 * (window.innerHeight * 0.8 / 100)}px`);
+            root.style.setProperty("--gap-size", `${2 * (window.innerWidth / 100)}px`);
+            root.style.setProperty("--padding", `${1 * (window.innerWidth / 100)}px`);
+        }
+    }, []);
+
+    // Render optimized component
+    return loading ? <MyAnimation /> : (
+        <div ref={containerRef}>
+            <DatePicker
+                selectedDate={currDate}
+                setSelectedDate={handleDatePickerChange}
+            />
+            <div className="navigation-container">
+                <button
+                    className="nav-button"
+                    onClick={() => navigateWeek('prev')}
+                >
+                    <ChevronLeft size={24} />
+                </button>
+                <button
+                    className="nav-button"
+                    onClick={() => navigateWeek('next')}
+                >
+                    <ChevronRight size={24} />
+                </button>
+            </div>
+            <div className="flex-container">
+                <div className="columnLeft">
+                    {columnLeft.map((day, index) => (
+                        <div key={`${weekDates[day]}-${index}`} className={`left-flex-item-${index}`}>
+                            <div className="editor-container">
+                                <h4 className="days">
+                                    {day}
+                                    <span className="date-display">
+                                        {weekDates[day] && formatDate(weekDates[day])}
+                                    </span>
+                                </h4>
+                                <div className="Editor">
+                                    <TiptapEditor
+                                        key={weekDates[day]}
+                                        content={notes[weekDates[day]] ?? ''}
+                                        onFocus={() => setActiveEditor(day)}
+                                        onUpdate={(newContent) => handleNoteChange(weekDates[day], newContent)}
+                                        setActiveEditor={setActiveEditor}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="columnRight">
+                    {columnRight.map((day, index) => (
+                        <div key={`${weekDates[day]}-${index}`} className={`right-flex-item-${index}`}>
+                            <div className="editor-container">
+                                <h4 className="days">
+                                    {day}
+                                    <span className="date-display">
+                                        {weekDates[day] && formatDate(weekDates[day])}
+                                    </span>
+                                </h4>
+                                <div className="Editor">
+                                    <TiptapEditor
+                                        key={weekDates[day]}
+                                        content={notes[weekDates[day]] ?? ''}
+                                        onFocus={() => setActiveEditor(day)}
+                                        onUpdate={(newContent) => handleNoteChange(weekDates[day], newContent)}
+                                        setActiveEditor={setActiveEditor}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            {activeEditor && (
+                <BottomBar bgColor="#ff0000">
+                    <MainButton
+                        text="Bold"
+                        onClick={() => activeEditor.chain().focus().toggleBold().run()}
+                        className={activeEditor.isActive('bold') ? 'is-active' : ''}
+                    />
+                    <SecondaryButton
+                        text="Cancel"
+                        position="bottom"
+                        onClick={() => activeEditor.chain().focus().toggleItalic().run()}
+                        className={activeEditor.isActive('italic') ? 'is-active' : ''}
+                    />
+                </BottomBar>
+            )}
+        </div>
+    );
+}
+
+export default App;*/ //оптимизированная версия bolt, стили не пропали но шустрее не стало
+
 
 import React, { useState, useEffect, useRef, useMemo, useLayoutEffect, useCallback } from "react";
 import WebApp from "@twa-dev/sdk";
@@ -1230,20 +1679,20 @@ import MyAnimation from "@/Loader.jsx";
 import DatePicker from "@/DatePicker.jsx";
 import { BottomBar, MainButton, SecondaryButton } from '@twa-dev/sdk/react';
 
-// { Button } from "@/components/ui/button.jsx";
+import { Button } from "@/components/ui/button.jsx";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 //import { Color } from '@tiptap/extension-color'
-//import ListItem from '@tiptap/extension-list-item'
-//import TextStyle from '@tiptap/extension-text-style'
-//import { EditorProvider, useCurrentEditor } from '@tiptap/react'
-//import TiptapEditor from "@/TiptapEditor.jsx";
+import ListItem from '@tiptap/extension-list-item'
+import TextStyle from '@tiptap/extension-text-style'
+import { EditorProvider, useCurrentEditor } from '@tiptap/react'
+import TiptapEditor from "@/TiptapEditor.jsx";
 //import MenuBar from "./MenuBar";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from '@tiptap/extension-placeholder';
 import {ToggleGroupDemo} from "@/ToggleGroupDemo.jsx";
 //import BottomBar from "@/BottomBar.jsx";
-import StickyBottomBar from "@/StickyBottomBar.jsx";
+import StickyBottomBar from "./StickyBottomBar.jsx";
 
 const days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 
@@ -1291,30 +1740,6 @@ const MenuBar = ({ editor }) => {
                 Strike
             </button>
         </div>
-    );
-};
-
-const TiptapEditor = ({ content, onFocus, onUpdate, setActiveEditor }) => {
-    const editor = useEditor({
-        extensions: [
-            StarterKit, // Используем StarterKit
-            Placeholder.configure({
-                placeholder: 'Запишите планы...', // Ваш текст, который будет отображаться, когда редактор пуст
-            }),
-        ],
-        content,
-        onUpdate: ({ editor }) => onUpdate(editor.getHTML()),
-        onFocus: () => setActiveEditor(editor),
-        onBlur: () => setActiveEditor(null),
-
-    });
-
-    if (!editor) return null;
-
-    return (
-
-            <EditorContent className="EDD" editor={editor} />
-
     );
 };
 
@@ -1374,6 +1799,7 @@ function App() {
                 data.forEach(({date, note}) => {
                     fetchedNotes[date] = note;
                 });
+
                 setNotes(fetchedNotes);
             }
             setLoading(false);
@@ -1513,8 +1939,41 @@ function App() {
         }
     };
 
+/*
+    function smoothTranslateY(element, targetY, duration = 300) {
+        if (!element) return;
 
- /*   useEffect(() => {
+        const startY = element.__currentY || 0; // Кешируем текущую позицию
+        const startTime = performance.now();
+
+        element.style.willChange = 'transform'; // Подсказка браузеру
+
+        function animate(time) {
+            const elapsed = time - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeOutCubic(progress);
+            const newY = startY + (targetY - startY) * easedProgress;
+
+            element.style.transform = `translate3d(0, ${newY}px, 0)`;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                element.style.willChange = ''; // Сбрасываем после завершения
+            }
+
+            element.__currentY = newY; // Обновляем кеш
+        }
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        requestAnimationFrame(animate);
+    }
+*/
+
+    useEffect(() => {
         const handleFocus = (event) => {
             const target = event.target;
             const editorContainer = target.closest('.editor-container');
@@ -1522,34 +1981,36 @@ function App() {
             if (editorContainer) {
                 const rect = editorContainer.getBoundingClientRect();
                 const viewportHeight = window.innerHeight;
-                const keyboardHeight = viewportHeight * 0.52; // 45% от экрана — примерная высота клавиатуры
-                const bottomPosition = rect.bottom;
-                console.log(rect.bottom);
+                const keyboardHeight = viewportHeight * 0.45; // 45% от экрана — примерная высота клавиатуры
+                const bottomPosition1 = rect.bottom;
+                //console.log(rect.bottom);
                 const visibleHeight = viewportHeight - keyboardHeight;
-                //setBottomPosition(keyboardHeight);
-                setIsKeyboardOpen(true);
+                setBottomPosition(0);
 
                 if (bottomPosition > visibleHeight) {
-                    const scrollAmount = bottomPosition - visibleHeight;
+                    const scrollAmount = bottomPosition1 - visibleHeight;
                     if (containerRef.current) {
-                        //containerRef.current.style.transform = `translateY(-${scrollAmount}px)`;
+                       containerRef.current.style.transform = `translateY(-${scrollAmount}px)`;
+                        //smoothTranslateY(containerRef.current, -scrollAmount);
                         //const bottombarPos = WebApp.viewportHeight;
                         setBottomPosition(scrollAmount);
                     }
                 } else {
-                    setBottomPosition(0);
+                    console.log(rect.bottom);
+                    //setBottomPosition(0);
                 }
             }
         };
 
-        /!*const handleBlur = () => {
+        const handleBlur = () => {
             if (containerRef.current) {
                 containerRef.current.style.transform = 'translateY(0)';
-                setIsKeyboardOpen(false);
+                setBottomPosition(0);
+                const sadx = WebApp.viewportStableHeight;
+                //setIsKeyboardOpen(false);
             }
-        };*!/
-
-        const handleBlur = (event) => {
+        };
+/*        const handleBlur = (event) => {
             if (
                 containerRef.current &&
                 containerRef.current.contains(event.relatedTarget)
@@ -1557,8 +2018,60 @@ function App() {
                 return; // НЕ убираем `StickyBottomBar`, если кликнули на него
             }
             if (containerRef.current) {
-                containerRef.current.style.transform = "translateY(0)";
+                containerRef.current.style.transform = 'translateY(0)';
                 setIsKeyboardOpen(false);
+            }
+        };*/
+
+        document.addEventListener('focusin', handleFocus);
+        document.addEventListener('focusout', handleBlur);
+
+        return () => {
+            document.removeEventListener('focusin', handleFocus);
+            document.removeEventListener('focusout', handleBlur);
+        };
+    }, []);
+
+    useEffect(() => {
+        let lastFocusedElement = null;
+
+        const handleFocus = (event) => {
+            const target = event.target;
+            const editorContainer = target.closest('.editor-container');
+
+            if (editorContainer) {
+                if (lastFocusedElement && lastFocusedElement !== target) {
+                    handleBlur({ target: lastFocusedElement }); // Вручную вызываем blur для предыдущего элемента
+                }
+
+                lastFocusedElement = target; // Запоминаем текущий элемент
+                const rect = editorContainer.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const keyboardHeight = viewportHeight * 0.45; // Примерная высота клавиатуры
+                const bottomPosition = rect.bottom;
+                const visibleHeight = viewportHeight - keyboardHeight;
+
+                if (bottomPosition > visibleHeight) {
+                    const scrollAmount = bottomPosition - visibleHeight;
+                    if (containerRef.current) {
+                        containerRef.current.style.transform = `translateY(-${scrollAmount}px)`;
+                        // smoothTranslateY(containerRef.current, -scrollAmount);
+                        // setBottomPosition(scrollAmount);
+                    }
+                } else {
+                    console.log(rect.bottom);
+                    // setBottomPosition(0);
+                }
+            }
+        };
+
+        const handleBlur = (event) => {
+            if (!event.target.closest('.editor-container')) {
+                if (containerRef.current) {
+                    containerRef.current.style.transform = 'translateY(0)';
+                    //setIsKeyboardOpen(false);
+                }
+                lastFocusedElement = null;
             }
         };
 
@@ -1569,6 +2082,25 @@ function App() {
             document.removeEventListener('focusin', handleFocus);
             document.removeEventListener('focusout', handleBlur);
         };
+    }, []);
+
+    /*useEffect(() => {
+        const handleFocus = (event) => {
+            const target = event.target;
+            const editorContainer = target.closest('.editor-container');
+
+            if (activeEditor){
+                const rect = editorContainer.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const keyboardHeight = viewportHeight * 0.45; // 45% от экрана — примерная высота клавиатуры
+                const bottomPosition = rect.bottom;
+                console.log(rect.bottom);
+                const visibleHeight = viewportHeight - keyboardHeight;
+
+            }
+
+
+        }
     }, []);
 */
     useEffect(() => {
@@ -1584,9 +2116,10 @@ function App() {
 
     const columnLeft = days.slice(0, 3);
     const columnRight = days.slice(3);
-
+    console.log("App re-rendered");
+    console.count('App re-rendered');
     return loading ? <MyAnimation/> : (
-        <div  ref={containerRef}>
+        <div className="" ref={containerRef}>
 
             <DatePicker selectedDate={currDate} setSelectedDate={(date) => {
                 //console.log("Выбранная дата:", date); // Смотрим, что приходит из календаря
@@ -1615,6 +2148,7 @@ function App() {
                     <ChevronRight size={24} />
                 </button>
             </div>
+            {WebApp.viewportStableHeight}
             <div className="flex-container">
                 <div className="columnLeft">
                     {columnLeft.map((day, index) => (
@@ -1631,7 +2165,7 @@ function App() {
 
                                     key={weekDates[day]}  // Перерисовываем при смене недели
                                     content={notes[weekDates[day]] ?? ''}
-                                    //onFocus={() => setActiveEditor(day)}
+                                    onFocus={() => setActiveEditor(day)}
                                     onUpdate={(newContent) => handleNoteChange(weekDates[day], newContent)}
                                     setActiveEditor={setActiveEditor}
                                 />
@@ -1655,7 +2189,7 @@ function App() {
 
                                 key={weekDates[day]}  // Перерисовываем при смене недели
                                 content={notes[weekDates[day]] || ''}
-                                //onFocus={() => setActiveEditor(day)}
+                                onFocus={() => setActiveEditor(day)}
                                 onUpdate={(newContent) => handleNoteChange(weekDates[day], newContent)}
                                 setActiveEditor={setActiveEditor}
                                 />
@@ -1665,17 +2199,16 @@ function App() {
                     ))}
                 </div>
             </div>
-            {activeEditor &&
-                <BottomBar bgColor="#ff0000" >
+           {activeEditor &&
+      /*           <BottomBar bgColor="#ff0000" >
                     <MainButton text="Bold" onClick={() => activeEditor.chain().focus().toggleBold().run()}
                                 className={activeEditor.isActive('bold') ? 'is-active' : ''} />
                     <SecondaryButton text="Cancel" position="bottom" onClick={() => activeEditor.chain().focus().toggleItalic().run()}
                                      className={activeEditor.isActive('italic') ? 'is-active' : ''} />
-                </BottomBar>
+                </BottomBar>}*/
 
-/*
-                <StickyBottomBar scrollAmount={bottomPosition} >
-                    <ToggleGroup variant="outline" type="multiple">
+               <StickyBottomBar /*scrollAmount={bottomPosition}*/ >
+                   <ToggleGroup variant="outline" type="multiple">
                         <ToggleGroupItem value="bold" aria-label="Toggle bold">
                             <Bold className="h-4 w-4" />
                         </ToggleGroupItem>
@@ -1686,17 +2219,9 @@ function App() {
                             <Underline className="h-4 w-4" />
                         </ToggleGroupItem>
                     </ToggleGroup>
-
-
-
-                </StickyBottomBar>
-*/
-
-            }
-
-
+                </StickyBottomBar>}
         </div>
     );
 }
 
-export default App;
+export default App;   //моя последняя актуальная версия с ререндерами
