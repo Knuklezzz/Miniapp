@@ -15,7 +15,7 @@ html, body {
     justify-content: space-between;
     align-items: stretch;
     overflow: hidden;
-    background-color: #232323;
+    background-color: #000000;
     margin: 0;
     padding-top: var(--tg-content-safe-area-inset-top);
     padding-bottom: var(--tg-content-safe-area-inset-bottom);
@@ -74,8 +74,8 @@ html, body {
     flex-direction: column;
     align-items: center;
     padding: var(--padding);*/
-    background-color: #323232;
-    /*color: white;*/
+    /*background-color: #323232;*/
+    color: white;
     /*text-align: center;*/
     border-radius: calc(var(--tile-size) * 0.05);
     width: var(--tile-size);
@@ -89,8 +89,8 @@ html, body {
 
 .right-flex-item-0,
 .right-flex-item-1 {
-    background-color: #323232;
-    /*color: white;*/
+    /*background-color: #323232;*/
+    color: white;
     /*text-align: center;*/
     border-radius: calc(var(--tile-size) * 0.05);
     width: var(--tile-size);
@@ -145,7 +145,7 @@ html, body {
 
 .right-flex-item-2,
 .right-flex-item-3 {
-    background-color: #323232;
+    /*background-color: #323232;*/
     color: white;
     text-align: center;
     border-radius: calc(var(--tile-size) * 0.05);

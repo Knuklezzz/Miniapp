@@ -53,7 +53,7 @@ const StickyBottomBar = ({ scrollAmount = 0, children}) => {
 
     return (
         <div
-            className="fixed left-0 w-full p-4 bg-gray-800 text-white text-center transition-transform duration-1000"
+            className="fixed left-0 w-full p-4 bg-black text-white text-center transition-transform duration-1000"
             style={{
                 bottom: `calc(100% - var(--tg-viewport-stable-height) - ${scrollAmount}px)`,
                 marginBottom:0,

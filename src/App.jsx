@@ -498,7 +498,11 @@ function App() {
             <div className="flex-container">
                 <div className="columnLeft">
                     {columnLeft.map((day, index) => (
-                        <div key={index} className={`left-flex-item-${index}`}>
+                        <div key={index} className={`left-flex-item-${index}`} style={{
+                            backgroundImage: `url(${import.meta.env.BASE_URL}gradients-left/${index}.png)`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat'}}>
                             <div className="editor-container">
                                 <h4 className="days">
                                     {day}
@@ -522,7 +526,11 @@ function App() {
                 </div>
                 <div className="columnRight">
                     {columnRight.map((day, index) => (
-                        <div key={index} className={`right-flex-item-${index}`}>
+                        <div key={index} className={`right-flex-item-${index}`} style={{
+                            backgroundImage: `url(${import.meta.env.BASE_URL}gradients-right/${index}.png)`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat'}}>
                             <div className="editor-container">
                                 <h4 className="days">
                                     {day}
