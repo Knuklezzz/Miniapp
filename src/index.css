@@ -2,53 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/*:root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-}*/
-
+:root {
+    width: 100vw;
+    height: 100vh;
+}
 
 html, body {
     font-family: "Rubik", sans-serif;
+    position: fixed;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    flex-direction: column; /* Чтобы контент растягивался */
+    justify-content: space-between;
+    align-items: stretch;
+    overflow: hidden;
     background-color: #232323;
+    margin: 0;
+    padding-top: var(--tg-content-safe-area-inset-top);
+    padding-bottom: var(--tg-content-safe-area-inset-bottom);
+    padding-left: var(--tg-content-safe-area-inset-left);
+    padding-right: var(--tg-content-safe-area-inset-right);
+    width: 100%;
+    height: 100%;
 }
+
+.navigation {
+    margin-left: calc((100vw - (var(--tile-size) * 2))/2);
+    margin-right: calc((100vw - (var(--tile-size) * 2 ))/2);
+}
+
+/*
+.loader{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+*/
 
 .flex-container {
     display: flex;
@@ -56,11 +45,11 @@ html, body {
     align-items: stretch;
     font-size: 17px;
     gap: var(--gap-size);
-    padding: calc(var(--gap-size)*3);
+    padding: calc(var(--gap-size) * 3);
     transition: transform 0.3s ease;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    /*margin: 20% 0;*/
+    /*overflow: hidden;*/
+    width: 100%;
+    height: 100%;
 }
 
 .columnLeft, .columnRight {
@@ -69,6 +58,7 @@ html, body {
     align-items: center;
     justify-content: stretch;
     gap: var(--gap-size);
+    /*overflow: hidden;*/
 }
 
 .left-flex-item-0,
@@ -221,19 +211,26 @@ html, body {
     right: 0;*/
     display: flex;
     justify-content: space-between;
+    padding-top: var(--gap-size);
+    padding-bottom: var(--gap-size);
+    font-size: 16px;
 /*    padding: 0 1rem;
     transform: translateY(-50%);
     z-index: 10;
     pointer-events: none;*/
 }
 
+.quote-container{
+    font-size: 12px;
+}
+
 .nav-button {
     background-color: #323232;
     color: white;
     border: none;
-    border-radius: 5%;
-    width: 25px;
-    height: 20px;
+    border-radius: calc(var(--tile-size) * 0.05);
+    width: calc(var(--tile-size) * 0.25);
+    height: calc(var(--tile-size) * 0.2);;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -366,26 +363,6 @@ html, body {
     border: none;           /* Убираем рамку, если она есть */
 }
 
-.bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    /*background-color: #fff;
-    border-top: 1px solid #ddd;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);*/
-    height: 60px;
-    z-index: 100;
-    padding: 10px;
-    transition: bottom 0.3s ease;
-    pointer-events: none;  /* Чтобы элементы под панелью были кликабельными */
-}
-.bottom-bar.keyboard-open {
-    bottom: 500px; /* При открытой клавиатуре сдвигаем панель вверх */
-}
 /*---break---*/
 @layer base {
   :root {

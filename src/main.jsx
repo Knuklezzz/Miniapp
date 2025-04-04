@@ -5,12 +5,13 @@ import App from './App.jsx'
 import WebApp from '@twa-dev/sdk'
 
 
-WebApp.ready();
-//WebApp.requestFullscreen();
-WebApp.disableVerticalSwipes();
+/*WebApp.ready();
+
+WebApp.disableVerticalSwipes();*/
+
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <StrictMode >
         <App />
   </StrictMode>,
 )
