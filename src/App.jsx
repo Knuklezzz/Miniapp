@@ -2,28 +2,19 @@ import React, { useState, useEffect, useRef, useMemo, useLayoutEffect, useCallba
 import WebApp from "@twa-dev/sdk";
 import '@/index.css';
 import { supabase } from "./supabaseClient.js";
-import {Bold, ChevronLeft, ChevronRight, Italic, Underline} from 'lucide-react';
+import {Bold, ChevronLeft, ChevronRight, Italic, Underline, Strikethrough, Undo, Redo, ChevronDown} from 'lucide-react';
 import MyAnimation from "@/Loader.jsx";
 import DatePicker from "@/DatePicker.jsx";
 import { BottomBar, MainButton, SecondaryButton } from '@twa-dev/sdk/react';
 
 import { Button } from "@/components/ui/button.jsx";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-//import { Color } from '@tiptap/extension-color'
-import ListItem from '@tiptap/extension-list-item'
-import TextStyle from '@tiptap/extension-text-style'
-import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import TiptapEditor from "@/TiptapEditor.jsx";
-//import MenuBar from "./MenuBar";
-import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from '@tiptap/extension-placeholder';
-import {ToggleGroupDemo} from "@/ToggleGroupDemo.jsx";
-//import BottomBar from "@/BottomBar.jsx";
 import StickyBottomBar from "./StickyBottomBar.jsx";
 import QuoteComponent from "@/QuoteComponent.jsx";
 
-const days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+/*const days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];*/
+const days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 
 function getWeekDates(date) {
     const monday = new Date(date);
@@ -45,28 +36,34 @@ function getWeekDates(date) {
     return weekDates;
 }
 
+const formatToYMD = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы с 0, поэтому +1
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+    return date.toLocaleDateString('ru-RU', { day: 'numeric'/*, month: 'short', year: 'numeric'*/ });
 }
 
 const MenuBar = ({ editor }) => {
     if (!editor) return null;
 
     return (
-        <div className="menu-bar">
+        <div className="menu-bar flex justify-center gap-2">
             <Button onClick={() => editor.chain().focus().toggleBold().run()}
                     className={editor.isActive('bold') ? 'is-active' : ''}>
-                Bold
+                <Bold></Bold>
             </Button>
             <Button onClick={() => editor.chain().focus().toggleItalic().run()}
                     className={editor.isActive('italic') ? 'is-active' : ''}>
-                Italic
+                <Italic></Italic>
             </Button>
             <Button onClick={() => editor.chain().focus().toggleStrike().run()}
                     className={editor.isActive('strike') ? 'is-active' : ''}>
-                Strike
+                <Strikethrough></Strikethrough>
             </Button>
             <Button
                 onClick={() => editor.chain().focus().undo().run()}
@@ -78,7 +75,7 @@ const MenuBar = ({ editor }) => {
                         .run()
                 }
             >
-                Undo
+                <Undo></Undo>
             </Button>
             <Button
                 onClick={() => editor.chain().focus().redo().run()}
@@ -90,9 +87,9 @@ const MenuBar = ({ editor }) => {
                         .run()
                 }
             >
-                Redo
+                <Redo></Redo>
             </Button>
-            <Button
+            {/*<Button
                 onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                 className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
             >
@@ -109,10 +106,14 @@ const MenuBar = ({ editor }) => {
                 className={editor.isActive('orderedList') ? 'is-active' : ''}
             >
                 Ordered list
+            </Button>*/}
+            <Button onClick={() => document.activeElement.blur()}>
+                <ChevronDown></ChevronDown>
             </Button>
         </div>
     );
 };
+
 
 function App() {
 
@@ -141,13 +142,27 @@ function App() {
     const [activeEditor, setActiveEditor] = useState(null);
 
     useEffect(() => {
+        const preloadImages = () => {
+            for (let i = 0; i < 3; i++) {
+                const leftImage = new Image();
+                leftImage.src = `${import.meta.env.BASE_URL}gradients-left/${i}.webp`;
+
+                const rightImage = new Image();
+                rightImage.src = `${import.meta.env.BASE_URL}gradients-right/${i}.webp`;
+            }
+        };
+
+        preloadImages();
+    }, []);
+
+    useEffect(() => {
         const root = document.documentElement;
 
         if (!root.style.getPropertyValue("--tile-size")) {
-            root.style.setProperty("--tile-size", `${40 * (window.innerWidth / 100)}px`);
-            root.style.setProperty("--height", `${24 * (window.innerHeight / 100)}px`);
+            root.style.setProperty("--tile-size", `${45 * (window.innerWidth / 100)}px`);
+            root.style.setProperty("--height", `${26 * (window.innerHeight / 100)}px`);
             root.style.setProperty("--gap-size", `${2 * (window.innerWidth / 100)}px`);
-            root.style.setProperty("--padding", `${1 * (window.innerWidth / 100)}px`);
+            root.style.setProperty("--padding", `${2 * (window.innerWidth / 100)}px`);
         }
     }, []);
 
@@ -157,7 +172,7 @@ function App() {
 
         const fetchNotes = async () => {
             setLoading(true);
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Задержка 1 сек
+            await new Promise((resolve) => setTimeout(resolve, 1500)); // Задержка 1 сек
             //вставить проверку того есть ли уже данные по дням в notes
             //const dateValues = Object.values(weekDates); //weekDates - даты отображаемой недели
             const dateValues = [
@@ -330,7 +345,7 @@ function App() {
             const editorContainer = target.closest('.editor-container');
 
             if (editorContainer) {
-                //containerRef.current.style.transform = `translateY(0)`;
+                containerRef.current.style.transform = `translateY(0)`;
                 const rect = editorContainer.getBoundingClientRect();
                 const viewportHeight = window.innerHeight;
                 const keyboardHeight = viewportHeight * 0.55; // 45% от экрана — примерная высота клавиатуры
@@ -361,18 +376,22 @@ function App() {
 
         };
 
-        const handleBlur = () => {
+/*        const handleBlur = () => {
             if (containerRef.current) {
                 containerRef.current.style.transform = 'translateY(0)';
                 //setIsKeyboardOpen(false);
             }
-        };
+        };*/
 
         const preventScroll = (event) => {
+            // Разрешаем скролл, если он внутри Tiptap-редактора
+/*            if (event.target.closest('.ProseMirror')) {
+                return;
+            }*/
             event.preventDefault();
         };
 
-/*        const handleBlur = (event) => {
+        const handleBlur = (event) => {
             if (
                 containerRef.current &&
                 containerRef.current.contains(event.relatedTarget)
@@ -382,7 +401,7 @@ function App() {
             if (containerRef.current) {
                 containerRef.current.style.transform = "translateY(0)";
             }
-        };*/
+        };
 
         document.addEventListener('focusin', handleFocus);
         document.addEventListener('focusout', handleBlur);
@@ -395,72 +414,27 @@ function App() {
         };
     }, []);
 
-/*
-    document.addEventListener('touchmove', function(event) {
-        event.preventDefault();
-    }, { passive: false });
-*/
+    const [showContent, setShowContent] = useState(false);
 
-   /* useEffect(() => {
-
-        const handleFocus = (event) => {
-            const target = event.target;
-            const editorContainer = target.closest('.editor-container');
-
-            if (editorContainer) {
-                containerRef.current.style.transform = `translateY(0)`;
-                const rect = editorContainer.getBoundingClientRect();
-                const viewportHeight = WebApp.viewportHeight;
-                const keyboardHeight = viewportHeight * 0.45; // 45% от экрана — примерная высота клавиатуры
-                const bottomPosition = rect.bottom;
-                const visibleHeight = viewportHeight - keyboardHeight;
-                //setIsKeyboardOpen(true);
-
-                setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                }, 100);
-
-                if (bottomPosition > visibleHeight) {
-                    const scrollAmount = bottomPosition - visibleHeight;
-                    if (containerRef.current) {
-                        containerRef.current.style.transform = `translateY(-${scrollAmount}px)`;
-                        setBottomPosition(scrollAmount);
-                    }
-                } else {
-                    setBottomPosition(0);
-                }
-            }
-        };
-
-        const handleBlur = () => {
-            if (containerRef.current) {
-                containerRef.current.style.transform = 'translateY(0)';
-                //setIsKeyboardOpen(false);
-            }
-        };
-
-/!*        const preventScroll = (event) => {
-            event.preventDefault();
-        };*!/
-
-        document.addEventListener('focusin', handleFocus);
-        document.addEventListener('focusout', handleBlur);
-        //document.addEventListener('touchmove', preventScroll, { passive: false });
-
-        return () => {
-            document.removeEventListener('focusin', handleFocus);
-            document.removeEventListener('focusout', handleBlur);
-            //document.removeEventListener('touchmove', preventScroll);
-        };
-    }, []);*/
+    useEffect(() => {
+        if (!loading) {
+            // Добавляем небольшую задержку перед показом, если нужно
+            setTimeout(() => {
+                setShowContent(true);
+            }, 50); // можно увеличить до 300-500 для более выраженной анимации
+        }
+    }, [loading]);
 
     const columnLeft = days.slice(0, 3);
     const columnRight = days.slice(3);
-    console.log("App re-rendered");
+    console.log(weekDates['Вт']);
+    console.log(formatToYMD(currDate));
+    console.log('Equal:', weekDates["Вт"] === formatToYMD(currDate));
     console.count('App re-rendered');
     return loading ? <MyAnimation className="loader"/> : (
         <div
             ref={containerRef}
+            //className={`fade-in ${showContent ? 'visible' : ''}`}
         >
             <div className='navigation'>
 
@@ -478,38 +452,52 @@ function App() {
                     }
                 }} />
                 <div className="navigation-container">
-                    <button
+                    <Button
                         className="nav-button"
                         onClick={() => navigateWeek('prev')}
                     >
                         <ChevronLeft size={24} />
-                    </button>
+                    </Button>
                     <div className="quote-container">
                     <QuoteComponent></QuoteComponent>
                     </div>
-                    <button
+                    <Button
                         className="nav-button"
                         onClick={() => navigateWeek('next')}
                     >
                         <ChevronRight size={24} />
-                    </button>
+                    </Button>
                 </div></div>
             {/*{WebApp.viewportStableHeight}*/}
             <div className="flex-container">
                 <div className="columnLeft">
                     {columnLeft.map((day, index) => (
                         <div key={index} className={`left-flex-item-${index}`} style={{
-                            backgroundImage: `url(${import.meta.env.BASE_URL}gradients-left/${index}.png)`,
+                            //backgroundImage: `url(${import.meta.env.BASE_URL}gradients-left/${index}.webp)`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat'}}>
+                            {/*<div className={`date-container ${weekDates[day] === formatToYMD(currDate) ? 'highlighted-date' : ''}`}>*/}
+                                <div
+                                    className="date-container"
+                                    style={{
+                                        boxShadow: weekDates[day] === formatToYMD(currDate) ? '0 0 10px rgba(0, 0, 0, 0.3)' : '',
+                                    }}
+                                >
+                                <p className="days">
+                                    {day}
+                                </p>
+                                <p className="date-display">
+                                    {weekDates[day] && formatDate(weekDates[day])}
+                                </p>
+                            </div>
                             <div className="editor-container">
-                                <h4 className="days">
+ {/*                               <h5 className="days">
                                     {day}
                                     <span className="date-display">
                                     {weekDates[day] && formatDate(weekDates[day])}
                                 </span>
-                                </h4>
+                                </h5>*/}
                                 <div className="Editor">
                                     <TiptapEditor
 
@@ -527,17 +515,17 @@ function App() {
                 <div className="columnRight">
                     {columnRight.map((day, index) => (
                         <div key={index} className={`right-flex-item-${index}`} style={{
-                            backgroundImage: `url(${import.meta.env.BASE_URL}gradients-right/${index}.png)`,
+                            //backgroundImage: `url(${import.meta.env.BASE_URL}gradients-right/${index}.webp)`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat'}}>
                             <div className="editor-container">
-                                <h4 className="days">
+                {/*                <h4 className="days">
                                     {day}
                                     <span className="date-display">
                                     {weekDates[day] && formatDate(weekDates[day])}
                                 </span>
-                                </h4>
+                                </h4>*/}
                                 <div className="Editor">
                                     <TiptapEditor
 
@@ -549,15 +537,27 @@ function App() {
                                     />
                                 </div>
                             </div>
+                            <div
+                                className="date-container"
+                                style={{
+                                    boxShadow: weekDates[day] === formatToYMD(currDate) ? '0 0 10px rgba(0, 0, 0, 0.3)' : '',
+                                }}
+                            >
+                                <p className="days">
+                                    {day}
+                                </p>
+                                <p className="date-display">
+                                    {weekDates[day] && formatDate(weekDates[day])}
+                                </p>
+                            </div>
                         </div>
                     ))}
                 </div>
             </div>
-            {activeEditor &&
+            {/*{activeEditor &&
                 <StickyBottomBar scrollAmount={bottomPosition}>
                     <MenuBar editor={activeEditor}></MenuBar>
-
-                </StickyBottomBar>}
+                </StickyBottomBar>}*/}
         </div>
     );
 }

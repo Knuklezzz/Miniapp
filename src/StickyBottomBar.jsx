@@ -53,13 +53,14 @@ const StickyBottomBar = ({ scrollAmount = 0, children}) => {
 
     return (
         <div
-            className="fixed left-0 w-full p-4 bg-black text-white text-center transition-transform duration-1000"
+            className="fixed left-0 w-full p-4 bg-black transition-transform duration-1000 flex items-center justify-center"
             style={{
                 bottom: `calc(100% - var(--tg-viewport-stable-height) - ${scrollAmount}px)`,
                 marginBottom:0,
-                paddingBottom: 0
+                paddingBottom: 0,
+                zIndex: 9999, // <-- Вот это добавляем!
             }}
-            //onMouseDown={(e) => e.preventDefault()} // Предотвращаем потерю фокуса
+            onMouseDown={(e) => e.preventDefault()} // Предотвращаем потерю фокуса
         >
             {children}
         </div>

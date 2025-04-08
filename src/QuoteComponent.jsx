@@ -53,7 +53,7 @@ const QuoteComponent = () => {
 
     return (
         <div className="flex justify-center items-center">
-            <blockquote className="text-white text-center italic relative">
+            <blockquote className="text-black text-center italic relative">
                 <span >“</span>
                 {dailyQuote.quote}
                 <span >”</span>
